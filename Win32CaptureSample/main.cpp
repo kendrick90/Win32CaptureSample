@@ -53,7 +53,7 @@
 //              - Fix for client area send when a minimized window is selected and restored
 //            Add resource files for icon and version
 //            Add version number to about box
-// 18.04.24   SampleWindow.cpp 
+// 18.04.24   SampleWindow.cpp
 //              - change icon to spoutC.ico with larger size for about box.
 //              - load icon from resources for standalone program
 //
@@ -83,18 +83,18 @@
 //
 // =============================================================================
 
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 namespace winrt
 {
-    using namespace Windows::Storage::Pickers;
     using namespace Windows::Graphics::Capture;
+    using namespace Windows::Storage::Pickers;
     using namespace Windows::UI::Composition;
 }
 
 namespace util
 {
-    using namespace desktop;
+    using namespace robmikh::common::desktop;
 }
 
 // SPOUT
@@ -104,23 +104,21 @@ int __stdcall WinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE hInstPrev, _In
 {
     // SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2); // works but everything draws small
     // SPOUT - Project properties > Manifest Tool > Input and Output > DPI Awareness > Per Monitor High DPI Aware
-    
+
     // Initialize COM
-    winrt::init_apartment(winrt::apartment_type::multi_threaded);
+    winrt::init_apartment(winrt::apartment_type::single_threaded);
 
     // Check to see that capture is supported
     auto isCaptureSupported = winrt::Windows::Graphics::Capture::GraphicsCaptureSession::IsSupported();
     if (!isCaptureSupported)
     {
         MessageBoxW(nullptr,
-            L"Screen capture is not supported on this device for this release of Windows!",
-            // SPOUT - change name from "Win32CaptureSample" to "SpoutWinCapture"
-            L"SpoutWinCapture",
-            MB_OK | MB_ICONERROR);
+                    L"Screen capture is not supported on this device for this release of Windows!",
+                    // SPOUT - change name from "Win32CaptureSample" to "SpoutWinCapture"
+                    L"SpoutWinCapture",
+                    MB_OK | MB_ICONERROR);
         return 1;
     }
-
-    SampleWindow::RegisterWindowClass();
 
     // Create the DispatcherQueue that the compositor needs to run
     auto controller = util::CreateDispatcherQueueControllerForCurrentThread();
@@ -128,20 +126,16 @@ int __stdcall WinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE hInstPrev, _In
     // Initialize Composition
     auto compositor = winrt::Compositor();
     auto root = compositor.CreateContainerVisual();
-    root.RelativeSizeAdjustment({ 1.0f, 1.0f });
+    root.RelativeSizeAdjustment({1.0f, 1.0f});
     // SPOUT
     // Make a little bit bigger
     // root.Size({ -220.0f, 0.0f });
     // root.Offset({ 220.0f, 0.0f, 0.0f });
-    root.Size({ -180.0f, 0.0f });
-    root.Offset({ 195.0f, 0.0f, 0.0f });
-
-    // Create the pickers
-    auto capturePicker = winrt::GraphicsCapturePicker();
-    auto savePicker = winrt::FileSavePicker();
+    root.Size({-180.0f, 0.0f});
+    root.Offset({195.0f, 0.0f, 0.0f});
 
     // Create the app
-    auto app = std::make_shared<App>(root, capturePicker, savePicker);
+    auto app = std::make_shared<App>(root);
 
     /*
     // SPOUT - console for debugging
@@ -158,18 +152,18 @@ int __stdcall WinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE hInstPrev, _In
     // Provide the window handle to the pickers (explicit HWND initialization)
     window.InitializeObjectWithWindowHandle(capturePicker);
     window.InitializeObjectWithWindowHandle(savePicker);
+    // auto window = SampleWindow(880, 635, app);
 
     // Hookup the visual tree to the window
     auto target = window.CreateWindowTarget(compositor);
     target.Root(root);
 
     // Message pump
-    MSG msg;
+    MSG msg = {};
     while (GetMessageW(&msg, nullptr, 0, 0))
     {
         TranslateMessage(&msg);
         DispatchMessageW(&msg);
     }
-
-    return static_cast<int>(msg.wParam);
+    return util::ShutdownDispatcherQueueControllerAndWait(controller, static_cast<int>(msg.wParam));
 }

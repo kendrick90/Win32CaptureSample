@@ -1,14 +1,24 @@
 #pragma once
 
+// Collision from minwindef min/max and std
+#define NOMINMAX 
+
+// Windows SDK support
 #include <Unknwn.h>
 #include <inspectable.h>
 
+// Needs to come before C++/WinRT headers
 #include <wil/cppwinrt.h>
 
 // WinRT
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.Metadata.h>
+#include <winrt/Windows.Graphics.Capture.h>
+#include <winrt/Windows.Graphics.DirectX.h>
+#include <winrt/Windows.Graphics.DirectX.Direct3d11.h>
+#include <winrt/Windows.Graphics.Imaging.h>
+#include <winrt/Windows.Security.Authorization.AppCapabilityAccess.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Pickers.h>
 #include <winrt/Windows.Storage.Streams.h>
@@ -17,12 +27,6 @@
 #include <winrt/Windows.UI.Composition.h>
 #include <winrt/Windows.UI.Composition.Desktop.h>
 #include <winrt/Windows.UI.Popups.h>
-#include <winrt/Windows.Graphics.Capture.h>
-#include <winrt/Windows.Graphics.DirectX.h>
-#include <winrt/Windows.Graphics.DirectX.Direct3d11.h>
-
-#include <windows.ui.composition.interop.h>
-#include <DispatcherQueue.h>
 
 // STL
 #include <atomic>
@@ -31,6 +35,8 @@
 #include <unordered_set>
 #include <vector>
 #include <optional>
+#include <future>
+#include <mutex>
 
 // D3D
 #include <d3d11_4.h>
@@ -43,15 +49,18 @@
 
 // WIL
 #include <wil/resource.h>
+#include <wil/cppwinrt_helpers.h>
+#include <wil/coroutine.h>
 
 // Helpers
-#include "util/composition.interop.h"
-#include "util/composition.desktop.interop.h"
-#include "util/d3dHelpers.h"
-#include "util/d3dHelpers.desktop.h"
-#include "util/direct3d11.interop.h"
-#include "util/capture.desktop.interop.h"
-#include "util/dispatcherqueue.desktop.interop.h"
-#include "util/stream.interop.h"
-#include "util/hwnd.interop.h"
-#include "completionSource.h"
+#include <robmikh.common/composition.interop.h>
+#include <robmikh.common/composition.desktop.interop.h>
+#include <robmikh.common/d3d11Helpers.h>
+#include <robmikh.common/d3d11Helpers.desktop.h>
+#include <robmikh.common/direct3d11.interop.h>
+#include <robmikh.common/d2dHelpers.h>
+#include <robmikh.common/capture.desktop.interop.h>
+#include <robmikh.common/dispatcherqueue.desktop.interop.h>
+#include <robmikh.common/stream.interop.h>
+#include <robmikh.common/hwnd.interop.h>
+#include <robmikh.common/ControlsHelper.h>

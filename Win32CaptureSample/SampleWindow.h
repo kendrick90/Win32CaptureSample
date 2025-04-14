@@ -1,31 +1,20 @@
 #pragma once
-#include "util/DesktopWindow.h"
+#include <robmikh.common/DesktopWindow.h>
 
 class App;
 class WindowList;
 class MonitorList;
 
-struct SampleWindow : util::desktop::DesktopWindow<SampleWindow>
+struct SampleWindow : robmikh::common::desktop::DesktopWindow<SampleWindow>
 {
     static const std::wstring ClassName;
-    static void RegisterWindowClass();
 
     // SPOUT
     // Allow for a command line
     // SampleWindow(HINSTANCE instance, int cmdShow, std::shared_ptr<App> app);
     SampleWindow(HINSTANCE instance, LPSTR lpCmdLine, int cmdShow, std::shared_ptr<App> app);
+    // SampleWindow(int width, int height, std::shared_ptr<App> app);
     ~SampleWindow();
-
-    winrt::Windows::UI::Composition::Desktop::DesktopWindowTarget CreateWindowTarget(winrt::Windows::UI::Composition::Compositor const& compositor)
-    {
-        return util::desktop::CreateDesktopWindowTarget(compositor, m_window, true);
-    }
-
-    void InitializeObjectWithWindowHandle(winrt::Windows::Foundation::IUnknown const& object)
-    {
-        auto initializer = object.as<util::desktop::IInitializeWithWindow>();
-        winrt::check_hresult(initializer->Initialize(m_window));
-    }
 
     LRESULT MessageHandler(UINT const message, WPARAM const wparam, LPARAM const lparam);
 
@@ -36,6 +25,18 @@ private:
         winrt::Windows::Graphics::DirectX::DirectXPixelFormat PixelFormat;
     };
 
+    struct DirtyRegionModeData
+    {
+        std::wstring Name;
+        winrt::Windows::Graphics::Capture::GraphicsCaptureDirtyRegionMode Mode;
+    };
+
+    struct MinUpdateIntervalData
+    {
+        std::wstring Name;
+        winrt::Windows::Foundation::TimeSpan Interval;
+    };
+
     enum class CaptureType
     {
         ProgrammaticWindow,
@@ -43,18 +44,18 @@ private:
         Picker,
     };
 
+    static void RegisterWindowClass();
     void CreateControls(HINSTANCE instance);
-    void SetSubTitle(std::wstring const& text);
+    void SetSubTitle(std::wstring const &text);
     winrt::fire_and_forget OnPickerButtonClicked();
     winrt::fire_and_forget OnSnapshotButtonClicked();
     void StopCapture();
-    void OnCaptureItemClosed(winrt::Windows::Graphics::Capture::GraphicsCaptureItem const&, winrt::Windows::Foundation::IInspectable const&);
+    void OnCaptureItemClosed(winrt::Windows::Graphics::Capture::GraphicsCaptureItem const &, winrt::Windows::Foundation::IInspectable const &);
     void OnCaptureStarted(
-        winrt::Windows::Graphics::Capture::GraphicsCaptureItem const& item, 
+        winrt::Windows::Graphics::Capture::GraphicsCaptureItem const &item,
         CaptureType captureType);
 
 private:
-
     HWND m_windowComboBox = nullptr;
     HWND m_monitorComboBox = nullptr;
     HWND m_pickerButton = nullptr;
@@ -69,10 +70,21 @@ private:
     HWND m_aboutButton = nullptr;
     std::string m_iconpath;
 
+    // std::unique_ptr<WindowList> m_windows;
+    // std::unique_ptr<MonitorList> m_monitors;
+    // // SPOUT - pixel format selection not used
+    // // std::vector<PixelFormatData> m_pixelFormats;
+    HWND m_borderRequiredCheckBox = nullptr;
+    HWND m_secondaryWindowsCheckBox = nullptr;
+    HWND m_visualizeDirtyRegionCheckBox = nullptr;
+    HWND m_dirtyRegionModeComboBox = nullptr;
+    HWND m_minUpdateIntervalComboBox = nullptr;
     std::unique_ptr<WindowList> m_windows;
     std::unique_ptr<MonitorList> m_monitors;
-    // SPOUT - pixel format selection not used
-    // std::vector<PixelFormatData> m_pixelFormats;
+    std::vector<PixelFormatData> m_pixelFormats;
+    std::vector<DirtyRegionModeData> m_dirtyRegionModes;
+    std::vector<MinUpdateIntervalData> m_updateIntervals;
     std::shared_ptr<App> m_app;
     winrt::Windows::Graphics::Capture::GraphicsCaptureItem::Closed_revoker m_itemClosedRevoker;
+    bool m_isSecondaryWindowsFeaturePresent = false;
 };

@@ -9,14 +9,13 @@
     <ClCompile Include="CaptureSnapshot.cpp" />
     <ClCompile Include="WindowList.cpp" />
     <ClCompile Include="MonitorList.cpp" />
-    <ClCompile Include="SimpleImageEncoder.cpp" />
+    <ClCompile Include="DirtyRegionVisualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="SimpleCapture.h" />
     <ClInclude Include="SampleWindow.h" />
-    <ClInclude Include="completionSource.h" />
     <ClInclude Include="CaptureSnapshot.h" />
     <ClInclude Include="WindowList.h" />
     <ClInclude Include="MonitorList.h" />
@@ -58,11 +57,16 @@
     <Filter Include="Util">
       <UniqueIdentifier>{bd52fd2f-19e3-47c1-afb1-969ba28603f5}</UniqueIdentifier>
     </Filter>
+    <ClInclude Include="DirtyRegionVisualizer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Win32CaptureSample.rc" />
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="app.manifest" />
   </ItemGroup>
 </Project>
