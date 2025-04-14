@@ -21,7 +21,7 @@ namespace util
 }
 
 wil::task<winrt::com_ptr<ID3D11Texture2D>>
-CaptureSnapshot::TakeAsync(winrt::IDirect3DDevice const& device, winrt::GraphicsCaptureItem const& item, winrt::DirectXPixelFormat const& pixelFormat)
+CaptureSnapshot::TakeAsync(winrt::IDirect3DDevice const &device, winrt::GraphicsCaptureItem const &item, winrt::DirectXPixelFormat const &pixelFormat)
 {
     // Grab the apartment context so we can return to it.
     winrt::apartment_context context;
@@ -30,7 +30,7 @@ CaptureSnapshot::TakeAsync(winrt::IDirect3DDevice const& device, winrt::Graphics
     winrt::com_ptr<ID3D11DeviceContext> d3dContext;
     d3dDevice->GetImmediateContext(d3dContext.put());
 
-    // Creating our frame pool with CreateFreeThreaded means that we 
+    // Creating our frame pool with CreateFreeThreaded means that we
     // will be called back from the frame pool's internal worker thread
     // instead of the thread we are currently on. It also disables the
     // DispatcherQueue requirement.
@@ -42,14 +42,13 @@ CaptureSnapshot::TakeAsync(winrt::IDirect3DDevice const& device, winrt::Graphics
     auto session = framePool.CreateCaptureSession(item);
 
     wil::shared_event captureEvent(wil::EventOptions::ManualReset);
-    winrt::Direct3D11CaptureFrame frame{ nullptr };
-    framePool.FrameArrived([&frame, captureEvent](auto& framePool, auto&)
-    {
+    winrt::Direct3D11CaptureFrame frame{nullptr};
+    framePool.FrameArrived([&frame, captureEvent](auto &framePool, auto &)
+                           {
         frame = framePool.TryGetNextFrame();
 
         // Complete the operation
-        captureEvent.SetEvent();
-    });
+        captureEvent.SetEvent(); });
 
     session.StartCapture();
     co_await winrt::resume_on_signal(captureEvent.get());

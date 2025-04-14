@@ -23,8 +23,8 @@ struct WindowInfo
     std::wstring Title;
     std::wstring ClassName;
 
-    bool operator==(const WindowInfo& info) { return WindowHandle == info.WindowHandle; }
-    bool operator!=(const WindowInfo& info) { return !(*this == info); }
+    bool operator==(const WindowInfo &info) { return WindowHandle == info.WindowHandle; }
+    bool operator!=(const WindowInfo &info) { return !(*this == info); }
 };
 
 class WindowList
@@ -33,13 +33,17 @@ public:
     WindowList();
     ~WindowList();
 
-    void RegisterComboBoxForUpdates(HWND comboBoxHandle) { m_comboBoxes.push_back(comboBoxHandle); ForceUpdateComboBox(comboBoxHandle); }
+    void RegisterComboBoxForUpdates(HWND comboBoxHandle)
+    {
+        m_comboBoxes.push_back(comboBoxHandle);
+        ForceUpdateComboBox(comboBoxHandle);
+    }
     void UnregisterComboBox(HWND comboBoxHandle) { m_comboBoxes.erase(std::remove(m_comboBoxes.begin(), m_comboBoxes.end(), comboBoxHandle), m_comboBoxes.end()); }
     const std::vector<WindowInfo> GetCurrentWindows() { return m_windows; }
 
 private:
-    void AddWindow(WindowInfo const& info);
-    bool RemoveWindow(WindowInfo const& info);
+    void AddWindow(WindowInfo const &info);
+    bool RemoveWindow(WindowInfo const &info);
     void ForceUpdateComboBox(HWND comboBoxHandle);
 
 private:
